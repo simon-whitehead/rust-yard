@@ -47,8 +47,16 @@ impl<'a> Lexer<'a> {
 
                 tokens = self.consume_input(&String::from_iter(chars)[..], tokens);
             },
-            Some(c) if *c == '+' || *c == '-' => { self.add_op_and_continue(*c, 2, &mut chars, &mut tokens); tokens = self.consume_input(&String::from_iter(chars)[..], tokens); },
-            Some(c) if *c == '*' || *c == '/' => { self.add_op_and_continue(*c, 4, &mut chars, &mut tokens); tokens = self.consume_input(&String::from_iter(chars)[..], tokens); },
+            Some(c) if *c == '+' || *c == '-' => {
+                // Add the operator and advance the iterator
+                self.add_op_and_continue(*c, 2, &mut chars, &mut tokens);
+                tokens = self.consume_input(&String::from_iter(chars)[..], tokens);
+            },
+            Some(c) if *c == '*' || *c == '/' => {
+                // Add the operator and advance the iterator
+                self.add_op_and_continue(*c, 4, &mut chars, &mut tokens);
+                tokens = self.consume_input(&String::from_iter(chars)[..], tokens);
+            },
             Some(c) => self.errors.push(format!("Unknown identifier: {}", c)),
             None => ()
         }
