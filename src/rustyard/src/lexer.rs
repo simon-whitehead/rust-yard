@@ -47,8 +47,8 @@ impl<'a> Lexer<'a> {
 
                 tokens = self.consume_input(&String::from_iter(chars)[..], tokens);
             },
-            Some(c) if *c == '+' || *c == '-' => { chars.next(); tokens.push(token::Token::Operator(*c, 2)); tokens = self.consume_input(&String::from_iter(chars)[..], tokens); },
-            Some(c) if *c == '*' || *c == '/' => { chars.next(); tokens.push(token::Token::Operator(*c, 4)); tokens = self.consume_input(&String::from_iter(chars)[..], tokens); },
+            Some(c) if *c == '+' || *c == '-' => { self.add_op_and_continue(*c, 2, &mut chars, &mut tokens); tokens = self.consume_input(&String::from_iter(chars)[..], tokens); },
+            Some(c) if *c == '*' || *c == '/' => { self.add_op_and_continue(*c, 4, &mut chars, &mut tokens); tokens = self.consume_input(&String::from_iter(chars)[..], tokens); },
             Some(c) => self.errors.push(format!("Unknown identifier: {}", c)),
             None => ()
         }
@@ -65,15 +65,20 @@ impl<'a> Lexer<'a> {
             match it.peek() {
                 Some(c) if c.is_numeric() || *c == '.' => chars.push(*c),
                 Some(c) if !c.is_numeric() => break,
-                Some(c) => println!("Peeking at: {}", c),
+                //Some(c) => println!("Peeking at: {}", c),
                 None => break,
-               // _ => ()
+                _ => ()
             }
             it.next();
         }
 
         // Return out number as a String
         chars.into_iter().collect()
+    }
+
+    fn add_op_and_continue(&mut self, c: char, precedence: u32, chars: &mut Peekable<Chars>, tokens: &mut Vec<token::Token>) {
+        chars.next();
+        tokens.push(token::Token::Operator(c, precedence));
     }
 }
 
