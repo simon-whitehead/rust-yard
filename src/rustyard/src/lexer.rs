@@ -90,12 +90,14 @@ impl<'a> Lexer<'a> {
     }
 }
 
+// Allows the Lexer AST to be printed as a string
 impl<'a> fmt::Display for Lexer<'a> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 
-        let mut result = String::new();
-        let ast = self.ast.to_vec();
+        let mut result = String::new(); // String to output the result to
+        let ast = self.ast.to_vec();    // Copy the AST into its own vector so we can consume it
 
+        // Loop over each item in the AST and print a String representation of it
         for t in ast {
             match t {
                 token::Token::Operator(c, p) => result.push(c),
@@ -105,6 +107,7 @@ impl<'a> fmt::Display for Lexer<'a> {
             result.push_str(" "); // Space separated
         }
 
+        // Return the result
         write!(f, "{}", result)
     }
 }
