@@ -8,20 +8,22 @@ use token;
 
 pub struct Lexer<'a> {
     raw_input: &'a str,
-    ast: Vec<token::Token>,
+    pub ast: Vec<token::Token>,
     pub errors: Vec<String> 
 }
 
 impl<'a> Lexer<'a> {
     pub fn new(input: &str) -> Lexer {
-        Lexer { 
+        let mut l = Lexer { 
             raw_input: input,
             ast: Vec::new(),
             errors: vec![]
-        }
+        };
+        l.lex();
+        l
     }
 
-    pub fn lex(&mut self) {
+    fn lex(&mut self) {
         let tokens = vec![];
 
         let ast: Vec<token::Token> = self.consume_input(self.raw_input, tokens);
@@ -86,28 +88,6 @@ impl<'a> Lexer<'a> {
 
     fn add_op_and_continue(&mut self, c: char, precedence: u32, chars: &mut Peekable<Chars>, tokens: &mut Vec<token::Token>) {
         chars.next();
-        tokens.push(token::Token::Operator(c, precedence));
-    }
-}
-
-// Allows the Lexer AST to be printed as a string
-impl<'a> fmt::Display for Lexer<'a> {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-
-        let mut result = String::new(); // String to output the result to
-        let ast = self.ast.to_vec();    // Copy the AST into its own vector so we can consume it
-
-        // Loop over each item in the AST and print a String representation of it
-        for t in ast {
-            match t {
-                token::Token::Operator(c, p) => result.push(c),
-                token::Token::DecimalNumber(n) => result.push_str(&n.to_string()[..]),
-                _ => ()
-            };
-            result.push_str(" "); // Space separated
-        }
-
-        // Return the result
-        write!(f, "{}", result)
+        tokens.push(token::Token::Operator(c, token::LEFT_ASSOCIATIVE, precedence));
     }
 }
