@@ -1,3 +1,5 @@
+use std::fmt;
+use std::f64;
 use std::iter::Peekable;
 use std::iter::FromIterator;
 use std::str::Chars;
@@ -14,29 +16,27 @@ impl<'a> Lexer<'a> {
     pub fn new(input: &str) -> Lexer {
         Lexer { 
             raw_input: input,
-            ast: vec![],
+            ast: Vec::new(),
             errors: vec![]
         }
     }
 
-    pub fn lex(&mut self) -> Vec<token::Token> {
+    pub fn lex(&mut self) {
         let tokens = vec![];
 
-        self.consume_input(self.raw_input, tokens)
+        let ast: Vec<token::Token> = self.consume_input(self.raw_input, tokens);
+        self.ast = ast;
     }
 
     fn consume_input(&mut self, raw_input: &str, mut tokens: Vec<token::Token>) -> Vec<token::Token> {
-        println!("Current input: {}", raw_input);
         let mut chars = raw_input.chars().peekable();
 
         // Iterate over each character in the input
         match chars.clone().peek() {
-            Some(c) if c.is_whitespace() => { tokens = self.consume_input(&String::from_iter(chars)[..], tokens); },
+            Some(c) if c.is_whitespace() => { chars.next(); tokens = self.consume_input(&String::from_iter(chars)[..], tokens); },
             Some(c) if c.is_numeric() => {
                 // Grab the number (allowing for possibly decimals)
                 let mut number = self.consume_number(&mut chars);
-                println!("CONSUMED A NUMBER: {}", number);
-
                 // Add a numeric token to the list of tokens
                 let number = match number.parse() {
                     Ok(val) => {
@@ -45,10 +45,10 @@ impl<'a> Lexer<'a> {
                     Err(E) => self.errors.push(format!("FATAL: {}", E))
                 };
 
-                println!("DEBUG: {}", c);
-
                 tokens = self.consume_input(&String::from_iter(chars)[..], tokens);
-            }
+            },
+            Some(c) if *c == '+' || *c == '-' => { chars.next(); tokens.push(token::Token::Operator(*c, 2)); tokens = self.consume_input(&String::from_iter(chars)[..], tokens); },
+            Some(c) if *c == '*' || *c == '/' => { chars.next(); tokens.push(token::Token::Operator(*c, 4)); tokens = self.consume_input(&String::from_iter(chars)[..], tokens); },
             Some(c) => self.errors.push(format!("Unknown identifier: {}", c)),
             None => ()
         }
@@ -60,18 +60,38 @@ impl<'a> Lexer<'a> {
     fn consume_number(&mut self, it: &mut Peekable<Chars>) -> String {
         let mut chars = vec![];
 
+        // Loop over every character until we reach a non-numeric one
         loop {
             match it.peek() {
-                Some(c) if c.is_numeric() || *c == '.' => { println!("ISNUMERIC"); chars.push(*c); },
+                Some(c) if c.is_numeric() || *c == '.' => chars.push(*c),
                 Some(c) if !c.is_numeric() => break,
                 Some(c) => println!("Peeking at: {}", c),
-                None => { println!("None hit"); break; },
+                None => break,
+               // _ => ()
             }
             it.next();
         }
 
-        println!("{:?}", chars);
-
+        // Return out number as a String
         chars.into_iter().collect()
+    }
+}
+
+impl<'a> fmt::Display for Lexer<'a> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+
+        let mut result = String::new();
+        let ast = self.ast.to_vec();
+
+        for t in ast {
+            match t {
+                token::Token::Operator(c, p) => result.push(c),
+                token::Token::DecimalNumber(n) => result.push_str(&n.to_string()[..]),
+                _ => ()
+            };
+            result.push_str(" "); // Space separated
+        }
+
+        write!(f, "{}", result)
     }
 }

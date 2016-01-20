@@ -1,3 +1,4 @@
+#[derive(Clone)]
 pub enum Token {
     Operator(char, u32),
     WholeNumber(i64),
