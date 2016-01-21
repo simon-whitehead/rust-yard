@@ -1,3 +1,4 @@
+
 use lexer;
 use token;
 
@@ -26,11 +27,11 @@ impl<'a> ShuntingYard<'a> {
         for t in self.lexer.ast.to_vec() {
             // If the token is a number, then add it to the output queue
             match t {
-                token::Token::WholeNumber(n) => self.output_queue.push(t),
-                token::Token::DecimalNumber(n) => self.output_queue.push(t),
+                token::Token::WholeNumber(_) => self.output_queue.push(t),
+                token::Token::DecimalNumber(_) => self.output_queue.push(t),
                 token::Token::Operator(o1, o1_associativity, o1_precedence) => {
                     match self.stack.last() {
-                        Some(&token::Token::Operator(o2, o2_associativity, o2_precedence)) => {
+                        Some(&token::Token::Operator(_, _, o2_precedence)) => {
                             if (o1_associativity == token::LEFT_ASSOCIATIVE &&
                                o1_precedence <= o2_precedence) ||
                                (o1_associativity == token::RIGHT_ASSOCIATIVE &&
@@ -60,7 +61,7 @@ impl<'a> ShuntingYard<'a> {
         // Iterate over the output queue and print each one to the result
         for t in output_queue {
             match t {
-                token::Token::Operator(c, a, p) => result.push(c),
+                token::Token::Operator(c, _, _) => result.push(c),
                 token::Token::DecimalNumber(n) => result.push_str(&n.to_string()[..]),
                 _ => ()
             };
@@ -71,14 +72,14 @@ impl<'a> ShuntingYard<'a> {
         result
     }
 
-    pub fn to_string_AST(&self) -> String {
+    pub fn to_string_ast(&self) -> String {
         let mut result = String::new(); // String to output the result to
         let ast = self.lexer.ast.to_vec();    // Copy the AST into its own vector so we can consume it
 
         // Loop over each item in the AST and print a String representation of it
         for t in ast {
             match t {
-                token::Token::Operator(c, a, p) => result.push(c),
+                token::Token::Operator(c, _, _) => result.push(c),
                 token::Token::DecimalNumber(n) => result.push_str(&n.to_string()[..]),
                 _ => ()
             };

@@ -1,5 +1,3 @@
-use std::fmt;
-use std::f64;
 use std::iter::Peekable;
 use std::iter::FromIterator;
 use std::str::Chars;
@@ -38,14 +36,14 @@ impl<'a> Lexer<'a> {
             Some(c) if c.is_whitespace() => { chars.next(); tokens = self.consume_input(&String::from_iter(chars)[..], tokens); },
             Some(c) if c.is_numeric() => {
                 // Grab the number (allowing for possibly decimals)
-                let mut number = self.consume_number(&mut chars);
+                let number = self.consume_number(&mut chars);
                 // Add a numeric token to the list of tokens
-                let number = match number.parse() {
+                match number.parse() {
                     Ok(val) => {
                         tokens.push(token::Token::DecimalNumber(val));
                     },
-                    Err(E) => self.errors.push(format!("FATAL: {}", E))
-                };
+                    Err(e) => self.errors.push(format!("FATAL: {}", e))
+                }
 
                 tokens = self.consume_input(&String::from_iter(chars)[..], tokens);
             },
@@ -91,3 +89,4 @@ impl<'a> Lexer<'a> {
         tokens.push(token::Token::Operator(c, token::LEFT_ASSOCIATIVE, precedence));
     }
 }
+
