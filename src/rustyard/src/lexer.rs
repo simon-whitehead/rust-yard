@@ -1,11 +1,8 @@
-use std::iter::Peekable;
-use std::iter::FromIterator;
-use std::str::Chars;
-
 use token;
+use peekable_string_iterator as peek;
 
 pub struct Lexer<'a> {
-    raw_input: &'a str,
+    iter: peek::PeekableStringIterator<'a>,
     pub ast: Vec<token::Token>,
     pub errors: Vec<String> 
 }
@@ -13,80 +10,75 @@ pub struct Lexer<'a> {
 impl<'a> Lexer<'a> {
     pub fn new(input: &str) -> Lexer {
         let mut l = Lexer { 
-            raw_input: input,
             ast: Vec::new(),
-            errors: vec![]
+            errors: vec![],
+            iter: peek::PeekableStringIterator::new(input)
         };
         l.lex();
         l
     }
 
     fn lex(&mut self) {
-        let tokens = vec![];
-
-        let ast: Vec<token::Token> = self.consume_input(self.raw_input, tokens);
-        self.ast = ast;
+        self.consume_input();
     }
 
-    fn consume_input(&mut self, raw_input: &str, mut tokens: Vec<token::Token>) -> Vec<token::Token> {
-        let mut chars = raw_input.chars().peekable();
+    // Recursively consume the input
+    fn consume_input(&mut self) {
+        // Peek the next character
+        let peeked: Option<char> = match self.iter.peek() {
+            Some(&c) => Some(c),
+            None => None
+        };
 
-        // Iterate over each character in the input
-        match chars.clone().peek() {
-            Some(c) if c.is_whitespace() => { chars.next(); tokens = self.consume_input(&String::from_iter(chars)[..], tokens); },
+        // Decide what to do
+        match peeked {
+            Some(c) if c.is_whitespace() => (),
             Some(c) if c.is_numeric() => {
                 // Grab the number (allowing for possibly decimals)
-                let number = self.consume_number(&mut chars);
+                let number = self.consume_number();
                 // Add a numeric token to the list of tokens
                 match number.parse() {
                     Ok(val) => {
-                        tokens.push(token::Token::DecimalNumber(val));
+                        self.ast.push(token::Token::DecimalNumber(val));
                     },
                     Err(e) => self.errors.push(format!("FATAL: {}", e))
                 }
 
-                tokens = self.consume_input(&String::from_iter(chars)[..], tokens);
             },
-            Some(c) if *c == '+' || *c == '-' => {
+            Some(c) if c == '+' || c == '-' => {
                 // Add the operator and advance the iterator
-                self.add_op_and_continue(*c, 2, &mut chars, &mut tokens);
-                tokens = self.consume_input(&String::from_iter(chars)[..], tokens);
+                self.ast.push(token::Token::Operator(c, token::LEFT_ASSOCIATIVE, 2));
             },
-            Some(c) if *c == '*' || *c == '/' => {
+            Some(c) if c == '*' || c == '/' => {
                 // Add the operator and advance the iterator
-                self.add_op_and_continue(*c, 4, &mut chars, &mut tokens);
-                tokens = self.consume_input(&String::from_iter(chars)[..], tokens);
+                self.ast.push(token::Token::Operator(c, token::LEFT_ASSOCIATIVE, 3));
             },
             Some(c) => self.errors.push(format!("Unknown identifier: {}", c)),
-            None => ()
+            None => return
         }
-
-        tokens
+        // Advance the iterator and continue consuming the input
+        self.iter.advance();
+        self.consume_input();
     }
 
     // Consumes the iterator until it reaches the end of a number
-    fn consume_number(&mut self, it: &mut Peekable<Chars>) -> String {
+    fn consume_number(&mut self) -> String {
         let mut chars = vec![];
 
         // Loop over every character until we reach a non-numeric one
         loop {
-            match it.peek() {
+            match self.iter.peek() {
                 Some(c) if c.is_numeric() || *c == '.' => chars.push(*c),
                 Some(c) if !c.is_numeric() => break,
                 //Some(c) => println!("Peeking at: {}", c),
                 None => break,
                 _ => ()
             }
-            it.next();
+            self.iter.advance();
         }
 
         // Return out number as a String
         chars.into_iter().collect()
-    }
-
-    fn add_op_and_continue(&mut self, c: char, precedence: u32, chars: &mut Peekable<Chars>, tokens: &mut Vec<token::Token>) {
-        chars.next();
-        tokens.push(token::Token::Operator(c, token::LEFT_ASSOCIATIVE, precedence));
     }
 }
 

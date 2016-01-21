@@ -7,7 +7,7 @@ pub struct PeekableStringIterator<'a> {
 }
 
 impl<'a> PeekableStringIterator<'a> {
-    fn new(raw_input: &str) -> PeekableStringIterator {
+    pub fn new(raw_input: &str) -> PeekableStringIterator {
         PeekableStringIterator {
             raw_input: raw_input.to_string(),
             iter: raw_input.chars().peekable()
