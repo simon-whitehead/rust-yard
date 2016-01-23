@@ -1,4 +1,3 @@
-pub mod parser;
 pub mod token;
 pub mod shunting_yard;
 
