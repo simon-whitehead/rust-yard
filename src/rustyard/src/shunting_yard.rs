@@ -1,5 +1,6 @@
 
 use lexer;
+use rpn_calculator as calc;
 use token;
 
 pub struct ShuntingYard<'a> {
@@ -20,6 +21,10 @@ impl<'a> ShuntingYard<'a> {
         yard
     }
 
+    pub fn calculate(&self) -> f64 {
+        calc::calculate(&self.output_queue)
+    }
+
     // Transforms the input from the Lexer in to the output_queue
     // and stack based on the Shunting Yard algorithm
     fn transform(&mut self) {
@@ -30,18 +35,21 @@ impl<'a> ShuntingYard<'a> {
                 token::Token::WholeNumber(_) => self.output_queue.push(t),
                 token::Token::DecimalNumber(_) => self.output_queue.push(t),
                 token::Token::Operator(o1, o1_associativity, o1_precedence) => {
-                    match self.stack.last() {
-                        Some(&token::Token::Operator(_, _, o2_precedence)) => {
-                            if (o1_associativity == token::LEFT_ASSOCIATIVE &&
-                               o1_precedence <= o2_precedence) ||
-                               (o1_associativity == token::RIGHT_ASSOCIATIVE &&
-                               o1_precedence < o2_precedence) {
-                                self.output_queue.push(self.stack.pop().unwrap());
-                            } else {
-                                self.stack.push(token::Token::Operator(o1, o1_associativity, o1_precedence))
-                            }
-                        },
-                        _ => self.stack.push(token::Token::Operator(o1, o1_associativity, o1_precedence))
+                    while true {
+                        match self.stack.last() {
+                            Some(&token::Token::Operator(_, _, o2_precedence)) => {
+                                if (o1_associativity == token::LEFT_ASSOCIATIVE &&
+                                   o1_precedence <= o2_precedence) ||
+                                   (o1_associativity == token::RIGHT_ASSOCIATIVE &&
+                                   o1_precedence < o2_precedence) {
+                                    self.output_queue.push(self.stack.pop().unwrap());
+                                } else {
+                                    self.stack.push(token::Token::Operator(o1, o1_associativity, o1_precedence));
+                                    break
+                                }
+                            },
+                            _ => { self.stack.push(token::Token::Operator(o1, o1_associativity, o1_precedence)); break; }
+                        }
                     }
                 },
                 _ => ()
@@ -50,7 +58,11 @@ impl<'a> ShuntingYard<'a> {
 
         // Are there any operators left on the stack?
         while self.stack.len() > 0 {
-            self.output_queue.push(self.stack.pop().unwrap());
+            let op = self.stack.pop();
+            match op {
+                Some(token::Token::Operator(o, oa, op)) => { self.output_queue.push(token::Token::Operator(o, oa, op)); },
+                _ => ()
+            }
         }
     }
 
