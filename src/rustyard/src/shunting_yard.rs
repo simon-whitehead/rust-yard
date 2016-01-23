@@ -6,7 +6,8 @@ use token;
 pub struct ShuntingYard<'a> {
     lexer: lexer::Lexer<'a>,
     output_queue: Vec<token::Token>,
-    stack: Vec<token::Token>
+    stack: Vec<token::Token>,
+    pub errors: Vec<String>
 }
 
 impl<'a> ShuntingYard<'a> {
@@ -14,8 +15,12 @@ impl<'a> ShuntingYard<'a> {
         let mut yard = ShuntingYard {
             lexer: lexer::Lexer::new(raw_input),
             output_queue: vec![],
-            stack: vec![]
+            stack: vec![],
+            errors: vec![]
         };
+
+        let lexer_errors = yard.lexer.errors.clone();
+        yard.errors.extend(lexer_errors);
 
         yard.transform();
         yard
@@ -52,6 +57,16 @@ impl<'a> ShuntingYard<'a> {
                         }
                     }
                 },
+                token::Token::LeftParenthesis => self.stack.push(token::Token::LeftParenthesis),
+                token::Token::RightParenthesis => {
+                    while true {
+                        match self.stack.last() {
+                            Some(&token::Token::LeftParenthesis) => { self.stack.pop().unwrap(); },
+                            None => break,
+                            _ => self.output_queue.push(self.stack.pop().unwrap()),
+                        }
+                    }
+                },
                 _ => ()
             }
         }
@@ -60,7 +75,17 @@ impl<'a> ShuntingYard<'a> {
         while self.stack.len() > 0 {
             let op = self.stack.pop();
             match op {
-                Some(token::Token::Operator(o, oa, op)) => { self.output_queue.push(token::Token::Operator(o, oa, op)); },
+                Some(token::Token::Operator(o, oa, op)) => {
+                    self.output_queue.push(token::Token::Operator(o, oa, op)); 
+                },
+                Some(token::Token::LeftParenthesis) => {
+                    self.errors.push("Unbalanced parenthesis".to_string());
+                    break;
+                },
+                Some(token::Token::RightParenthesis) => {
+                    self.errors.push("Unbalanced parenthesis".to_string());
+                    break;
+                },
                 _ => ()
             }
         }
@@ -75,6 +100,8 @@ impl<'a> ShuntingYard<'a> {
             match t {
                 token::Token::Operator(c, _, _) => result.push(c),
                 token::Token::DecimalNumber(n) => result.push_str(&n.to_string()[..]),
+                token::Token::LeftParenthesis => result.push_str("("),
+                token::Token::RightParenthesis => result.push_str(")"),
                 _ => ()
             };
 
@@ -93,6 +120,8 @@ impl<'a> ShuntingYard<'a> {
             match t {
                 token::Token::Operator(c, _, _) => result.push(c),
                 token::Token::DecimalNumber(n) => result.push_str(&n.to_string()[..]),
+                token::Token::LeftParenthesis => result.push_str("("),
+                token::Token::RightParenthesis => result.push_str(")"),
                 _ => ()
             };
             result.push_str(" "); // Space separated

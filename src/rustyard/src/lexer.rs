@@ -24,6 +24,9 @@ impl<'a> Lexer<'a> {
 
     // Recursively consume the input
     fn consume_input(&mut self) {
+        // Should we skip advancing if a sub method has done it for us?
+        let mut skip_advance = false;
+
         // Peek the next character
         let peeked: Option<char> = match self.iter.peek() {
             Some(&c) => Some(c),
@@ -43,7 +46,7 @@ impl<'a> Lexer<'a> {
                     },
                     Err(e) => self.errors.push(format!("FATAL: {}", e))
                 }
-
+                skip_advance = true;
             },
             Some(c) if c == '+' || c == '-' => {
                 // Add the operator and advance the iterator
@@ -53,11 +56,15 @@ impl<'a> Lexer<'a> {
                 // Add the operator and advance the iterator
                 self.ast.push(token::Token::Operator(c, token::LEFT_ASSOCIATIVE, 3));
             },
+            Some(c) if c == '(' => self.ast.push(token::Token::LeftParenthesis),
+            Some(c) if c == ')' => self.ast.push(token::Token::RightParenthesis),
             Some(c) => self.errors.push(format!("Unknown identifier: {}", c)),
             None => return
         }
         // Advance the iterator and continue consuming the input
-        self.iter.advance();
+        if !skip_advance {
+            self.iter.advance();
+        }
         self.consume_input();
     }
 
@@ -72,7 +79,7 @@ impl<'a> Lexer<'a> {
                 Some(c) if !c.is_numeric() => break,
                 //Some(c) => println!("Peeking at: {}", c),
                 None => break,
-                _ => ()
+                _ => break
             }
             self.iter.advance();
         }

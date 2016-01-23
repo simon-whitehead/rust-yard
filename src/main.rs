@@ -1,10 +1,19 @@
 extern crate rustyard;
 
 fn main() {
-    let shunting_yard = rustyard::ShuntingYard::new("2 + 4 * 3");
+    let input = "(2 + 4) * 3)";
+    let shunting_yard = rustyard::ShuntingYard::new(input);
 
-    println!("Input is: 2 + 4 * 3");
-    println!("Shunting Yard result: {}", shunting_yard.to_string());
+    println!("Input is: {}", input);
 
-    println!("Equation equals: {}", shunting_yard.calculate());
+    if shunting_yard.errors.len() > 0 {
+        println!("Errors:");
+        for err in shunting_yard.errors {
+            println!("ERR: {}", err);
+        }
+    } else {
+        println!("Lexer result: {}", shunting_yard.to_string_ast());
+        println!("Shunting Yard result: {}", shunting_yard.to_string());
+        println!("Equation equals: {}", shunting_yard.calculate());
+    }
 }
