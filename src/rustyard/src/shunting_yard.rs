@@ -59,10 +59,19 @@ impl<'a> ShuntingYard<'a> {
                 },
                 token::Token::LeftParenthesis => self.stack.push(token::Token::LeftParenthesis),
                 token::Token::RightParenthesis => {
+                    let mut found_left_paren = false;
                     while true {
                         match self.stack.last() {
-                            Some(&token::Token::LeftParenthesis) => { self.stack.pop().unwrap(); },
-                            None => break,
+                            Some(&token::Token::LeftParenthesis) => {
+                                found_left_paren = true;
+                                self.stack.pop().unwrap(); 
+                            },
+                            None => {
+                                if !found_left_paren {
+                                    self.errors.push("Unbalanced parenthesis".to_string());
+                                }
+                                break;
+                            },
                             _ => self.output_queue.push(self.stack.pop().unwrap()),
                         }
                     }
