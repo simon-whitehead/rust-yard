@@ -50,7 +50,7 @@ impl<'a> ShuntingYard<'a> {
                 token::Token::WholeNumber(_) => self.output_queue.push(t),
                 token::Token::DecimalNumber(_) => self.output_queue.push(t),
                 token::Token::Operator(o1, o1_associativity, o1_precedence) => {
-                    while true {
+                    loop {
                         match self.stack.last() {
                             Some(&token::Token::Operator(_, _, o2_precedence)) => {
                                 if (o1_associativity == token::LEFT_ASSOCIATIVE &&
@@ -70,7 +70,7 @@ impl<'a> ShuntingYard<'a> {
                 token::Token::LeftParenthesis => self.stack.push(token::Token::LeftParenthesis),
                 token::Token::RightParenthesis => {
                     let mut found_left_paren = false;
-                    while true {
+                    loop {
                         match self.stack.last() {
                             Some(&token::Token::LeftParenthesis) => {
                                 found_left_paren = true;
