@@ -37,6 +37,23 @@ Shunting Yard result: 2 4 + 3 *
 Equation equals: 18
 ```
 
+Errors:
+```
+Simon$ cargo run "4 / (2 + 3"
+Input is: 4 / (2 + 3
+Errors:
+ERR: Unbalanced parenthesis
+```
+
+```
+Simon$ cargo run "a + b * c"
+Input is: a + b * c
+Errors:
+ERR: Unknown identifier: a
+ERR: Unknown identifier: b
+ERR: Unknown identifier: c
+```
+
 ### Licence
 
 You're free to use this as you see fit. Some acknowledgement would be nice if you feel like doing so.
