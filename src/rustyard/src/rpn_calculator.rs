@@ -3,7 +3,6 @@ use token;
 // Calculate accepts input tokens that are
 // ordered according to Reverse Polish Notation
 // and returns a result
-
 pub fn calculate(input: &Vec<token::Token>) -> f64 {
     let mut input = input.clone();
     let mut stack = Vec::new();

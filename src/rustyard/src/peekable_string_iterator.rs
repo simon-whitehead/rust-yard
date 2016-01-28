@@ -1,15 +1,17 @@
 use std::iter;
 use std::str;
 
+/// PeekableStringIterator owns an iterator that advances
+/// through some string input. The idea here is that the Lexer
+/// should not actually own the iterator that iterates through
+/// the input - so it is wrapper in this struct.
 pub struct PeekableStringIterator<'a> {
-    raw_input: String,
     iter: iter::Peekable<str::Chars<'a>>
 }
 
 impl<'a> PeekableStringIterator<'a> {
     pub fn new(raw_input: &str) -> PeekableStringIterator {
         PeekableStringIterator {
-            raw_input: raw_input.to_string(),
             iter: raw_input.chars().peekable()
         }
     }

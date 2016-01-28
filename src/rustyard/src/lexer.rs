@@ -1,6 +1,8 @@
 use token;
 use peekable_string_iterator as peek;
 
+/// The Lexer struct represents a lexer that tokenizes
+/// the string input.
 pub struct Lexer<'a> {
     iter: peek::PeekableStringIterator<'a>,
     pub ast: Vec<token::Token>,
@@ -35,7 +37,7 @@ impl<'a> Lexer<'a> {
 
         // Decide what to do
         match peeked {
-            Some(c) if c.is_whitespace() => (),
+            Some(c) if c.is_whitespace() => (), // Ignore whitespace
             Some(c) if c.is_numeric() => {
                 // Grab the number (allowing for possibly decimals)
                 let number = self.consume_number();

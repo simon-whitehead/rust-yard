@@ -1,8 +1,13 @@
+/*
+ * Rustyard - Simon Whitehead, 2016
+ */
 
 use lexer;
 use rpn_calculator as calc;
 use token;
 
+/// The ShuntingYard struct transforms an expression
+/// to a 64-bit floating point value
 pub struct ShuntingYard<'a> {
     lexer: lexer::Lexer<'a>,
     output_queue: Vec<token::Token>,
@@ -19,13 +24,18 @@ impl<'a> ShuntingYard<'a> {
             errors: vec![]
         };
 
+        // If there were Lexer errors, add them now.
         let lexer_errors = yard.lexer.errors.clone();
         yard.errors.extend(lexer_errors);
 
+        // Transform the Lexer input via the Shunting Yard algorithm
         yard.transform();
         yard
     }
 
+    /// calculate returns a 64-bit floating value after
+    /// parsing the Reverse Polish Notation represented
+    /// by the output_queue.
     pub fn calculate(&self) -> f64 {
         calc::calculate(&self.output_queue)
     }
@@ -82,6 +92,7 @@ impl<'a> ShuntingYard<'a> {
 
         // Are there any operators left on the stack?
         while self.stack.len() > 0 {
+            // Pop them off and push them to the output_queue
             let op = self.stack.pop();
             match op {
                 Some(token::Token::Operator(o, oa, op)) => {
@@ -100,6 +111,8 @@ impl<'a> ShuntingYard<'a> {
         }
     }
 
+    /// to_string returns the string representation of the Shunting Yard
+    /// algorithm in Reverse Polish Notation.
     pub fn to_string(&self) -> String {
         let mut result = String::new(); // String to output the result
         let output_queue = self.output_queue.to_vec(); // Make a copy of the output queue
@@ -120,6 +133,8 @@ impl<'a> ShuntingYard<'a> {
         result
     }
 
+    /// to_string_ast returns the string representation of the
+    /// Lexer tokens.
     pub fn to_string_ast(&self) -> String {
         let mut result = String::new(); // String to output the result to
         let ast = self.lexer.ast.to_vec();    // Copy the AST into its own vector so we can consume it
