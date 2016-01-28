@@ -14,8 +14,8 @@ pub fn calculate(input: &Vec<token::Token>) -> f64 {
         match tok {
             token::Token::DecimalNumber(n) => stack.push(token::Token::DecimalNumber(n)),
             token::Token::Operator(o, _, _) => {
-                let left = stack.pop();
                 let right = stack.pop();
+                let left = stack.pop();
 
                 match (left, right) {
                     (Some(token::Token::DecimalNumber(n1)), Some(token::Token::DecimalNumber(n2))) => stack.push(token::Token::DecimalNumber(operate(o, n1, n2))),
