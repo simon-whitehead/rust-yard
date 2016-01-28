@@ -36,7 +36,7 @@ impl<'a> ShuntingYard<'a> {
     /// calculate returns a 64-bit floating value after
     /// parsing the Reverse Polish Notation represented
     /// by the output_queue.
-    pub fn calculate(&self) -> f64 {
+    pub fn calculate(&self) -> Option<f64> {
         calc::calculate(&self.output_queue)
     }
 

@@ -3,7 +3,7 @@ use token;
 // Calculate accepts input tokens that are
 // ordered according to Reverse Polish Notation
 // and returns a result
-pub fn calculate(input: &Vec<token::Token>) -> f64 {
+pub fn calculate(input: &Vec<token::Token>) -> Option<f64> {
     let mut input = input.clone();
     let mut stack = Vec::new();
     let mut len = input.len();
@@ -33,8 +33,8 @@ pub fn calculate(input: &Vec<token::Token>) -> f64 {
     let result = stack.pop();
 
     match result {
-        Some(token::Token::DecimalNumber(n)) => n,
-        _ => -1f64 
+        Some(token::Token::DecimalNumber(n)) => Some(n),
+        _ => None
     }
 }
 
