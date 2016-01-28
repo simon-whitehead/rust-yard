@@ -8,7 +8,7 @@ This is me experimenting with Rust (I love it so far). As such, the code quality
 
 ### Examples
 
-The implementation accepts the 4 basic mathematical operators and parenthesis. Some examples are below:
+The implementation accepts the 4 basic mathematical operators and parenthesis. It also considers all input to be floating point. Some examples are below:
 
 Basic addition:
 ```
@@ -17,6 +17,15 @@ Input is: 2 + 4
 Lexer result: 2 + 4 
 Shunting Yard result: 2 4 + 
 Equation equals: 6
+```
+
+Floating point:
+```
+Simon$ cargo run "1.75 * 2"
+Input is: 1.75 * 2
+Lexer result: 1.75 * 2 
+Shunting Yard result: 1.75 2 * 
+Equation equals: 3.5
 ```
 
 Operator precedence:
