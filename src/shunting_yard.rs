@@ -46,11 +46,11 @@ impl<'a> ShuntingYard<'a> {
     // and stack based on the Shunting Yard algorithm
     fn transform(&mut self) {
         // Iterate over each token and move it based on the algorithm
-        for t in self.lexer.ast.to_vec() {
+        for tok in self.lexer.ast.to_vec() {
             // If the token is a number, then add it to the output queue
-            match t {
-                token::Token::WholeNumber(_) => self.output_queue.push(t),
-                token::Token::DecimalNumber(_) => self.output_queue.push(t),
+            match tok {
+                token::Token::WholeNumber(_) => self.output_queue.push(tok),
+                token::Token::DecimalNumber(_) => self.output_queue.push(tok),
                 token::Token::Operator(o1, o1_associativity, o1_precedence) => {
                     loop {
                         match self.stack.last() {
@@ -120,8 +120,8 @@ impl<'a> ShuntingYard<'a> {
         let ast = self.lexer.ast.to_vec();    // Copy the AST into its own vector so we can consume it
 
         // Loop over each item in the AST and print a String representation of it
-        for t in ast {
-            match t {
+        for tok in ast {
+            match tok {
                 token::Token::Operator(c, _, _) => result.push(c),
                 token::Token::DecimalNumber(n) => result.push_str(&n.to_string()[..]),
                 token::Token::LeftParenthesis => result.push_str("("),
@@ -144,8 +144,8 @@ impl<'a> std::string::ToString for ShuntingYard<'a> {
         let output_queue = self.output_queue.to_vec(); // Make a copy of the output queue
 
         // Iterate over the output queue and print each one to the result
-        for t in output_queue {
-            match t {
+        for tok in output_queue {
+            match tok {
                 token::Token::Operator(c, _, _) => result.push(c),
                 token::Token::DecimalNumber(n) => result.push_str(&n.to_string()[..]),
                 token::Token::LeftParenthesis => result.push_str("("),
