@@ -2,6 +2,8 @@
  * Rustyard - Simon Whitehead, 2016
  */
 
+use std;
+
 use lexer;
 use rpn_calculator as calc;
 use token;
@@ -111,28 +113,6 @@ impl<'a> ShuntingYard<'a> {
         }
     }
 
-    /// to_string returns the string representation of the Shunting Yard
-    /// algorithm in Reverse Polish Notation.
-    pub fn to_string(&self) -> String {
-        let mut result = String::new(); // String to output the result
-        let output_queue = self.output_queue.to_vec(); // Make a copy of the output queue
-
-        // Iterate over the output queue and print each one to the result
-        for t in output_queue {
-            match t {
-                token::Token::Operator(c, _, _) => result.push(c),
-                token::Token::DecimalNumber(n) => result.push_str(&n.to_string()[..]),
-                token::Token::LeftParenthesis => result.push_str("("),
-                token::Token::RightParenthesis => result.push_str(")"),
-                _ => ()
-            };
-
-            result.push_str(" "); // Space separated
-        }
-
-        result
-    }
-
     /// to_string_ast returns the string representation of the
     /// Lexer tokens.
     pub fn to_string_ast(&self) -> String {
@@ -154,4 +134,29 @@ impl<'a> ShuntingYard<'a> {
         // Return the result
         result
     }
+}
+
+impl<'a> std::string::ToString for ShuntingYard<'a> {
+    /// to_string returns the string representation of the Shunting Yard
+    /// algorithm in Reverse Polish Notation.
+    fn to_string(&self) -> String {
+        let mut result = String::new(); // String to output the result
+        let output_queue = self.output_queue.to_vec(); // Make a copy of the output queue
+
+        // Iterate over the output queue and print each one to the result
+        for t in output_queue {
+            match t {
+                token::Token::Operator(c, _, _) => result.push(c),
+                token::Token::DecimalNumber(n) => result.push_str(&n.to_string()[..]),
+                token::Token::LeftParenthesis => result.push_str("("),
+                token::Token::RightParenthesis => result.push_str(")"),
+                _ => ()
+            };
+
+            result.push_str(" "); // Space separated
+        }
+
+        result
+    }
+
 }
