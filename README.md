@@ -12,7 +12,7 @@ The implementation accepts the 4 basic mathematical operators and parenthesis. I
 
 Basic addition:
 ```
-Simon$ cargo run "2 + 4"
+Simon$ cargo run --example main "2 + 4"
 Input is: 2 + 4
 Lexer result: 2 + 4 
 Shunting Yard result: 2 4 + 
@@ -21,7 +21,7 @@ Equation equals: 6
 
 Floating point:
 ```
-Simon$ cargo run "1.75 * 2"
+Simon$ cargo run --example main "1.75 * 2"
 Input is: 1.75 * 2
 Lexer result: 1.75 * 2 
 Shunting Yard result: 1.75 2 * 
@@ -30,7 +30,7 @@ Equation equals: 3.5
 
 Operator precedence:
 ```
-Simon$ cargo run "2 + 4 * 3"
+Simon$ cargo run --example main "2 + 4 * 3"
 Input is: 2 + 4 * 3
 Lexer result: 2 + 4 * 3 
 Shunting Yard result: 2 4 3 * + 
@@ -39,7 +39,7 @@ Equation equals: 14
 
 Parenthesis:
 ```
-Simon$ cargo run "(2 + 4) * 3"
+Simon$ cargo run --example main "(2 + 4) * 3"
 Input is: (2 + 4) * 3
 Lexer result: ( 2 + 4 ) * 3 
 Shunting Yard result: 2 4 + 3 * 
@@ -48,14 +48,14 @@ Equation equals: 18
 
 Errors:
 ```
-Simon$ cargo run "4 / (2 + 3"
+Simon$ cargo run --example main "4 / (2 + 3"
 Input is: 4 / (2 + 3
 Errors:
 ERR: Unbalanced parenthesis
 ```
 
 ```
-Simon$ cargo run "a + b * c"
+Simon$ cargo run --example main "a + b * c"
 Input is: a + b * c
 Errors:
 ERR: Unknown identifier: a
