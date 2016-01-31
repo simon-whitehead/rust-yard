@@ -80,4 +80,4 @@ ERR: Unknown identifier: c
 
 ### Licence
 
-You're free to use this as you see fit. Some acknowledgement would be nice if you feel like doing so.
+I've settled on an MIT licence for this repository.
