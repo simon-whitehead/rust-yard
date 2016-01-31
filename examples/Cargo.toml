@@ -1,4 +1,7 @@
 [package]
-name = "rustyard"
+name = "rustyard-example"
 version = "0.1.0"
 authors = ["Simon Whitehead <chemnova@gmail.com>"]
+
+[[bin]]
+name = "rustyard-example"

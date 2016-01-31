@@ -1,7 +1,4 @@
 [package]
-name = "rustyard-v1"
+name = "rustyard"
 version = "0.1.0"
 authors = ["Simon Whitehead <chemnova@gmail.com>"]
-
-[dependencies]
-rustyard = { path = "src/rustyard" }
