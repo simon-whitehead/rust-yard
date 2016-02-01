@@ -44,6 +44,7 @@ fn operate(operator: char, left: f64, right: f64) -> f64 {
         '-' => left - right,
         '*' => left * right,
         '/' => left / right,
+        '^' => left.powf(right),
         _ => 0f64
     }
 }
