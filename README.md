@@ -1,4 +1,4 @@
-# Rustyard
+# Rustyard ![alt text](https://travis-ci.org/simon-whitehead/rust-yard.svg?branch=master "master build status")
 
 The [Shunting Yard algorithm](https://en.wikipedia.org/wiki/Shunting-yard_algorithm), implemented in Rust.
 
