@@ -81,20 +81,21 @@ impl<'a> Lexer<'a> {
     // Consumes the iterator until it reaches the end of a number
     fn consume_number(&mut self) -> String {
         // If the last operator was a sign ... prefix the number with it
-        let last_op = self.ast.pop();
+        let last_op = self.ast.last().cloned();
         match last_op {
             Some(token::Token::Operator(o, _, _)) => {
                 if o == '+' || o == '-' {
                     // Pop the operator and set our sign
+                    self.ast.pop();
                     self.sign = Some(o);
                 }
             },
-            None => (),
-            Some(_) => self.ast.push(last_op.unwrap())
+            _ => ()
         }
 
         let mut chars = vec![self.sign.unwrap_or('+')];
 
+        // Reset the sign
         self.sign = None;
 
         // Loop over every character until we reach a non-numeric one
