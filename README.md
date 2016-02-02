@@ -23,7 +23,7 @@ fn main() {
 
 ### Examples
 
-The implementation accepts the 4 basic mathematical operators and parenthesis. It also considers all input to be floating point. Some examples are below:
+The implementation accepts the 4 basic mathematical operators, the power operator and parenthesis. It also considers all input to be floating point. Some examples are below:
 
 Basic addition:
 ```
@@ -51,6 +51,17 @@ Lexer result: 2 + 4 * 3
 Shunting Yard result: 2 4 3 * + 
 Equation equals: 14
 ```
+
+Powers:
+```
+
+Simon$ cargo run --example main "(3 + 5) ^ 2"
+Input is: (3 + 5) ^ 2
+Lexer result: ( 3 + 5 ) ^ 2 
+Shunting Yard result: 3 5 + 2 ^ 
+Equation equals: 64
+```
+
 
 Parenthesis:
 ```
