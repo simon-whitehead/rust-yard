@@ -5,6 +5,7 @@ use peekable_string_iterator as peek;
 /// the string input.
 pub struct Lexer<'a> {
     iter: peek::PeekableStringIterator<'a>,
+    sign: Option<char>,
     pub ast: Vec<token::Token>,
     pub errors: Vec<String> 
 }
@@ -14,7 +15,8 @@ impl<'a> Lexer<'a> {
         let mut l = Lexer { 
             ast: Vec::new(),
             errors: vec![],
-            iter: peek::PeekableStringIterator::new(input)
+            iter: peek::PeekableStringIterator::new(input),
+            sign: None
         };
         l.lex();
         l
@@ -37,9 +39,14 @@ impl<'a> Lexer<'a> {
 
         // Decide what to do
         match peeked {
-            Some(c) if c.is_whitespace() => (), // Ignore whitespace
+            Some(c) if c.is_whitespace() => {
+                // Reset the sign
+                self.sign = None;
+
+                self.ast.push(token::Token::Whitespace);
+            }, 
             Some(c) if c.is_numeric() => {
-                // Grab the number (allowing for possibly decimals)
+                // Grab the number (allowing for possible decimals)
                 let number = self.consume_number();
                 // Add a numeric token to the list of tokens
                 match number.parse() {
@@ -73,7 +80,22 @@ impl<'a> Lexer<'a> {
 
     // Consumes the iterator until it reaches the end of a number
     fn consume_number(&mut self) -> String {
-        let mut chars = vec![];
+        // If the last operator was a sign ... prefix the number with it
+        let last_op = self.ast.pop();
+        match last_op {
+            Some(token::Token::Operator(o, _, _)) => {
+                if o == '+' || o == '-' {
+                    // Pop the operator and set our sign
+                    self.sign = Some(o);
+                }
+            },
+            None => (),
+            Some(_) => self.ast.push(last_op.unwrap())
+        }
+
+        let mut chars = vec![self.sign.unwrap_or('+')];
+
+        self.sign = None;
 
         // Loop over every character until we reach a non-numeric one
         loop {

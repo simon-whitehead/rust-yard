@@ -25,7 +25,8 @@ pub fn calculate(input: &Vec<token::Token>) -> Option<f64> {
             token::Token::WholeNumber(n) => stack.push(token::Token::DecimalNumber(n as f64)),
             token::Token::FunctionCall(_, _) => break,
             token::Token::LeftParenthesis => (),
-            token::Token::RightParenthesis => ()
+            token::Token::RightParenthesis => (),
+            token::Token::Whitespace => ()
         }
         len = input.len();
     }
