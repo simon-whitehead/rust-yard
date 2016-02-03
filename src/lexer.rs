@@ -80,19 +80,10 @@ impl<'a> Lexer<'a> {
 
     // Consumes the iterator until it reaches the end of a number
     fn consume_number(&mut self) -> String {
-        // If the last operator was a sign ... prefix the number with it
-        let last_op = self.ast.last().cloned();
-        match last_op {
-            Some(token::Token::Operator(o, _, _)) => {
-                if o == '+' || o == '-' {
-                    // Pop the operator and set our sign
-                    self.ast.pop();
-                    self.sign = Some(o);
-                }
-            },
-            _ => ()
-        }
+        // Decipher the sign of the number we want to consume
+        self.decipher_sign();
 
+        // Initialize our number with the given sign
         let mut chars = vec![self.sign.unwrap_or('+')];
 
         // Reset the sign
@@ -112,6 +103,22 @@ impl<'a> Lexer<'a> {
 
         // Return out number as a String
         chars.into_iter().collect()
+    }
+
+    fn decipher_sign(&mut self) {
+        // If the last operator was a sign ... set the sign
+        let last_op = self.ast.last().cloned();
+        match last_op {
+            Some(token::Token::Operator(o, _, _)) => {
+                if o == '+' || o == '-' {
+                    // Pop the operator (because its not an operator .. its indicating the numbers'
+                    // sign) and store our sign
+                    self.ast.pop();
+                    self.sign = Some(o);
+                }
+            },
+            _ => ()
+        }
     }
 }
 
