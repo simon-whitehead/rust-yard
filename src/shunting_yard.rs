@@ -52,22 +52,22 @@ impl<'a> ShuntingYard<'a> {
                 token::Token::WholeNumber(_) => self.output_queue.push(tok),
                 token::Token::DecimalNumber(_) => self.output_queue.push(tok),
                 token::Token::Operator(o1, o1_associativity, o1_precedence) => {
-                    loop {
+                    while self.stack.len() > 0 {
                         match self.stack.last() {
                             Some(&token::Token::Operator(_, _, o2_precedence)) => {
                                 if (o1_associativity == token::LEFT_ASSOCIATIVE &&
                                    o1_precedence <= o2_precedence) ||
                                    (o1_associativity == token::RIGHT_ASSOCIATIVE &&
-                                   o1_precedence < o2_precedence) {
-                                    self.output_queue.push(self.stack.pop().unwrap());
-                                } else {
-                                    self.stack.push(token::Token::Operator(o1, o1_associativity, o1_precedence));
-                                    break
-                                }
+                                   o1_precedence < o2_precedence) { 
+                                       self.output_queue.push(self.stack.pop().unwrap());
+                                   } else {
+                                       break
+                                   }
                             },
-                            _ => { self.stack.push(token::Token::Operator(o1, o1_associativity, o1_precedence)); break; }
+                            _ => break
                         }
                     }
+                    self.stack.push(token::Token::Operator(o1, o1_associativity, o1_precedence));
                 },
                 token::Token::LeftParenthesis => self.stack.push(token::Token::LeftParenthesis),
                 token::Token::RightParenthesis => {
@@ -77,6 +77,7 @@ impl<'a> ShuntingYard<'a> {
                             Some(&token::Token::LeftParenthesis) => {
                                 found_left_paren = true;
                                 self.stack.pop().unwrap(); 
+                                break;
                             },
                             None => {
                                 if !found_left_paren {
@@ -128,7 +129,10 @@ impl<'a> ShuntingYard<'a> {
                 token::Token::RightParenthesis => result.push_str(")"),
                 _ => ()
             };
-            result.push_str(" "); // Space separated
+
+            if tok != token::Token::Whitespace {
+                result.push_str(" "); // Space separated
+            }
         }
 
         // Return the result
@@ -153,7 +157,9 @@ impl<'a> std::string::ToString for ShuntingYard<'a> {
                 _ => ()
             };
 
-            result.push_str(" "); // Space separated
+            if tok != token::Token::Whitespace {
+                result.push_str(" "); // Space separated
+            }
         }
 
         result
