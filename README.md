@@ -52,6 +52,15 @@ Shunting Yard result: 2 4 3 * +
 Equation equals: 14
 ```
 
+Negative numbers:
+```
+Simon$ cargo run --example main "-2 * -2"
+Input is: -2 * -2
+Lexer result: -2 * -2
+Shunting Yard result: -2 -2 *
+Equation equals: 4
+```
+
 Powers:
 ```
 
