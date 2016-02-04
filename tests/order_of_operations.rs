@@ -91,5 +91,5 @@ fn parenthesis_overrides_powers_before_everything() {
 
     assert_eq!(217f64, yard.calculate().unwrap());
     assert_eq!("1 + ( 2 * 3 ) ^ 3 ", yard.to_string_ast());
-    assert_eq!("1 2 3 3 ^ * + ", yard.to_string());
+    assert_eq!("1 2 3 * 3 ^ + ", yard.to_string());
 }
