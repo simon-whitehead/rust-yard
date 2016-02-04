@@ -25,7 +25,7 @@ fn main() {
 
 The implementation accepts the 4 basic mathematical operators, the power operator and parenthesis. It also considers all input to be floating point. Some examples are below:
 
-Basic addition:
+#### Basic addition:
 ```
 Simon$ cargo run --example main "2 + 4"
 Input is: 2 + 4
@@ -34,7 +34,7 @@ Shunting Yard result: 2 4 +
 Equation equals: 6
 ```
 
-Floating point:
+#### Floating point:
 ```
 Simon$ cargo run --example main "1.75 * 2"
 Input is: 1.75 * 2
@@ -43,7 +43,7 @@ Shunting Yard result: 1.75 2 *
 Equation equals: 3.5
 ```
 
-Operator precedence:
+#### Operator precedence:
 ```
 Simon$ cargo run --example main "2 + 4 * 3"
 Input is: 2 + 4 * 3
@@ -52,7 +52,7 @@ Shunting Yard result: 2 4 3 * +
 Equation equals: 14
 ```
 
-Negative numbers:
+#### Negative numbers:
 ```
 Simon$ cargo run --example main "-2 * -2"
 Input is: -2 * -2
@@ -61,9 +61,8 @@ Shunting Yard result: -2 -2 *
 Equation equals: 4
 ```
 
-Powers:
+#### Powers:
 ```
-
 Simon$ cargo run --example main "(3 + 5) ^ 2"
 Input is: (3 + 5) ^ 2
 Lexer result: ( 3 + 5 ) ^ 2 
@@ -72,7 +71,7 @@ Equation equals: 64
 ```
 
 
-Parenthesis:
+#### Parenthesis:
 ```
 Simon$ cargo run --example main "(2 + 4) * 3"
 Input is: (2 + 4) * 3
@@ -81,7 +80,7 @@ Shunting Yard result: 2 4 + 3 *
 Equation equals: 18
 ```
 
-Errors:
+#### Errors:
 ```
 Simon$ cargo run --example main "4 / (2 + 3"
 Input is: 4 / (2 + 3
