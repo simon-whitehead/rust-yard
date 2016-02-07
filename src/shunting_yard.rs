@@ -46,11 +46,11 @@ impl<'a> ShuntingYard<'a> {
     // and stack based on the Shunting Yard algorithm
     fn transform(&mut self) {
         // Iterate over each token and move it based on the algorithm
-        for tok in self.lexer.ast.to_vec() {
+        for tok in &self.lexer.ast {
             // If the token is a number, then add it to the output queue
-            match tok {
-                token::Token::WholeNumber(_) => self.output_queue.push(tok),
-                token::Token::DecimalNumber(_) => self.output_queue.push(tok),
+            match *tok {
+                token::Token::WholeNumber(_) => self.output_queue.push(tok.to_owned()),
+                token::Token::DecimalNumber(_) => self.output_queue.push(tok.to_owned()),
                 token::Token::Operator(o1, o1_associativity, o1_precedence) => {
                     while self.stack.len() > 0 {
                         match self.stack.last() {
@@ -114,11 +114,10 @@ impl<'a> ShuntingYard<'a> {
     /// Lexer tokens.
     pub fn to_string_ast(&self) -> String {
         let mut result = String::new(); // String to output the result to
-        let ast = self.lexer.ast.to_vec();    // Copy the AST into its own vector so we can consume it
 
         // Loop over each item in the AST and print a String representation of it
-        for tok in ast {
-            match tok {
+        for tok in &self.lexer.ast {
+            match *tok {
                 token::Token::Operator(c, _, _) => result.push(c),
                 token::Token::DecimalNumber(n) => result.push_str(&n.to_string()[..]),
                 token::Token::LeftParenthesis => result.push_str("("),
@@ -126,7 +125,7 @@ impl<'a> ShuntingYard<'a> {
                 _ => ()
             };
 
-            if tok != token::Token::Whitespace {
+            if *tok != token::Token::Whitespace {
                 result.push_str(" "); // Space separated
             }
         }
@@ -141,11 +140,10 @@ impl<'a> std::string::ToString for ShuntingYard<'a> {
     /// algorithm in Reverse Polish Notation.
     fn to_string(&self) -> String {
         let mut result = String::new(); // String to output the result
-        let output_queue = self.output_queue.to_vec(); // Make a copy of the output queue
 
         // Iterate over the output queue and print each one to the result
-        for tok in output_queue {
-            match tok {
+        for tok in &self.output_queue {
+            match *tok {
                 token::Token::Operator(c, _, _) => result.push(c),
                 token::Token::DecimalNumber(n) => result.push_str(&n.to_string()[..]),
                 token::Token::LeftParenthesis => result.push_str("("),
@@ -153,7 +151,7 @@ impl<'a> std::string::ToString for ShuntingYard<'a> {
                 _ => ()
             };
 
-            if tok != token::Token::Whitespace {
+            if *tok != token::Token::Whitespace {
                 result.push_str(" "); // Space separated
             }
         }

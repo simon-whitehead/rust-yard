@@ -1,6 +1,6 @@
 [package]
 name = "rustyard"
-version = "0.1.0"
+version = "0.3.0"
 authors = ["Simon Whitehead <chemnova@gmail.com>"]
 description = "A Shunting Yard implementation and calculator. This crate is able to calculate basic math expressions passed to it as strings and return a 64-bit floating point return value."
 repository = "http://github.com/simon-whitehead/rust-yard"
