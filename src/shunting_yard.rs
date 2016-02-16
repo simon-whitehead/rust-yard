@@ -14,7 +14,7 @@ pub struct ShuntingYard<'a> {
     lexer: lexer::Lexer<'a>,
     output_queue: Vec<token::Token>,
     stack: Vec<token::Token>,
-    pub errors: Vec<String>
+    errors: Vec<String>
 }
 
 impl<'a> ShuntingYard<'a> {
