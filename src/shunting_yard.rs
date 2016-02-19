@@ -14,7 +14,7 @@ pub struct ShuntingYard<'a> {
     lexer: lexer::Lexer<'a>,
     output_queue: Vec<token::Token>,
     stack: Vec<token::Token>,
-    pub errors: Vec<String>
+    errors: Vec<String>
 }
 
 impl<'a> ShuntingYard<'a> {
@@ -38,8 +38,18 @@ impl<'a> ShuntingYard<'a> {
     /// calculate returns a 64-bit floating value after
     /// parsing the Reverse Polish Notation represented
     /// by the output_queue.
-    pub fn calculate(&self) -> Option<f64> {
-        calc::calculate(&self.output_queue)
+    pub fn calculate(&self) -> Result<f64, Vec<String>> {
+        // If there are lexer errors, return early with them
+        if self.errors.len() > 0 {
+            return Err(self.errors.clone())
+        }
+
+        match calc::calculate(&self.output_queue) {
+            Some(n) => {
+                Ok(n)
+            },
+            _ => Err(vec!["Unable to calculate a result".to_string()])
+        }
     }
 
     // Transforms the input from the Lexer in to the output_queue
