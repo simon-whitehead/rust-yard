@@ -8,7 +8,7 @@ This is me experimenting with Rust (I love it so far). As such, the code quality
 
 ### Using the code
 
-You can instantiate a `ShuntingYard` instance with an expression and call its `calculate` method, which returns an `Option<f64>`. An example would be:
+You can instantiate a `ShuntingYard` instance with an expression and call its `calculate` method, which returns an `Result<f64, Vec<String>>`. An example would be:
 
 ```
 extern crate rustyard;
