@@ -14,7 +14,7 @@ You can instantiate a `ShuntingYard` instance with an expression and call its `c
 extern crate rustyard;
 
 fn main() {
-    let yard = rustyard::ShuntingYard::new();
+    let mut yard = rustyard::ShuntingYard::new();
 
     // This prints "The result is: 14"
     println!("The result is: {}", yard.calculate("2 + 4 * 3").unwrap());
