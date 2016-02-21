@@ -21,6 +21,10 @@ impl<'a> Lexer<'a> {
     }
 
     pub fn lex(&mut self, raw_input: &'a str) {
+        // Clear out everything
+        self.ast.clear();
+        self.errors.clear();
+
         self.iter.set_input(raw_input);
         self.consume_input();
     }

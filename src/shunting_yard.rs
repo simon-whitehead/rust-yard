@@ -31,7 +31,12 @@ impl<'a> ShuntingYard<'a> {
     /// parsing the Reverse Polish Notation represented
     /// by the output_queue.
     pub fn calculate(&mut self, raw_input: &'a str) -> Result<f64, Vec<String>> {
-        // Instantiate a Lexer
+        // Clear out everything
+        self.output_queue.clear();
+        self.stack.clear();
+        self.errors.clear();
+
+        // Lex the input
         self.lexer.lex(raw_input);
 
         // If there were Lexer errors, add them now.
