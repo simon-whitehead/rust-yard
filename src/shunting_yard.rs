@@ -18,27 +18,29 @@ pub struct ShuntingYard<'a> {
 }
 
 impl<'a> ShuntingYard<'a> {
-    pub fn new(raw_input: &str) -> ShuntingYard {
-        let mut yard = ShuntingYard {
-            lexer: lexer::Lexer::new(raw_input),
+    pub fn new() -> ShuntingYard<'a> {
+        ShuntingYard {
+            lexer: lexer::Lexer::new(),
             output_queue: vec![],
             stack: vec![],
             errors: vec![]
-        };
-
-        // If there were Lexer errors, add them now.
-        let lexer_errors = yard.lexer.errors.clone();
-        yard.errors.extend(lexer_errors);
-
-        // Transform the Lexer input via the Shunting Yard algorithm
-        yard.transform();
-        yard
+        }
     }
 
     /// calculate returns a 64-bit floating value after
     /// parsing the Reverse Polish Notation represented
     /// by the output_queue.
-    pub fn calculate(&self) -> Result<f64, Vec<String>> {
+    pub fn calculate(&mut self, raw_input: &'a str) -> Result<f64, Vec<String>> {
+        // Instantiate a Lexer
+        self.lexer.lex(raw_input);
+
+        // If there were Lexer errors, add them now.
+        let lexer_errors = self.lexer.errors.clone();
+        self.errors.extend(lexer_errors);
+
+        // Transform the Lexer input via the Shunting Yard algorithm
+        self.transform();
+
         // If there are lexer errors, return early with them
         if self.errors.len() > 0 {
             return Err(self.errors.clone())

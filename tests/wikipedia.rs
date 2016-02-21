@@ -6,7 +6,8 @@ extern crate rustyard;
 
 #[test]
 fn wikipedia_one() {
-    let yard = rustyard::ShuntingYard::new("3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3");
+    let mut yard = rustyard::ShuntingYard::new();
 
+    yard.calculate("3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3").unwrap();
     assert_eq!("3 4 2 * 1 5 - 2 3 ^ ^ / + ", yard.to_string());
 }

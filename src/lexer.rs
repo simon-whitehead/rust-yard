@@ -11,18 +11,17 @@ pub struct Lexer<'a> {
 }
 
 impl<'a> Lexer<'a> {
-    pub fn new(input: &str) -> Lexer {
-        let mut l = Lexer { 
+    pub fn new() -> Lexer<'a> {
+        Lexer { 
             ast: Vec::new(),
             errors: vec![],
-            iter: peek::PeekableStringIterator::new(input),
+            iter: peek::PeekableStringIterator::new(),
             sign: None
-        };
-        l.lex();
-        l
+        }
     }
 
-    fn lex(&mut self) {
+    pub fn lex(&mut self, raw_input: &'a str) {
+        self.iter.set_input(raw_input);
         self.consume_input();
     }
 
