@@ -10,10 +10,14 @@ pub struct PeekableStringIterator<'a> {
 }
 
 impl<'a> PeekableStringIterator<'a> {
-    pub fn new(raw_input: &str) -> PeekableStringIterator {
+    pub fn new() -> PeekableStringIterator<'a> {
         PeekableStringIterator {
-            iter: raw_input.chars().peekable()
+            iter: "".chars().peekable()
         }
+    }
+
+    pub fn set_input(&mut self, raw_input: &'a str) {
+        self.iter = raw_input.chars().peekable();
     }
 
     pub fn advance(&mut self) {
