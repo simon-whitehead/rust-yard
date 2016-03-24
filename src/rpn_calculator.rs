@@ -3,10 +3,11 @@ use token;
 // Calculate accepts input tokens that are
 // ordered according to Reverse Polish Notation
 // and returns a result
-pub fn calculate(input: &Vec<token::Token>) -> Option<f64> {
+pub fn calculate(input: &Vec<token::Token>) -> Result<f64, Vec<String>> {
     let mut input = input.clone();
     let mut stack = Vec::new();
     let mut len = input.len();
+    let mut errors = Vec::new();
 
     // Iterate over the tokens and calculate a result
     while len > 0 {
@@ -128,7 +129,7 @@ pub fn calculate(input: &Vec<token::Token>) -> Option<f64> {
 
                         stack.push(token::Token::DecimalNumber(values.iter().fold(0.0, |acc, val| acc + val)));
                     },
-                    _ => break
+                    _ => errors.push(format!("Unknown identifier: {}", function_name))
                 }
             },
             _ => ()
@@ -136,11 +137,15 @@ pub fn calculate(input: &Vec<token::Token>) -> Option<f64> {
         len = input.len();
     }
 
-    let result = stack.pop();
+    if errors.len() > 0 {
+        Err(errors)
+    } else {
+        let result = stack.pop();
 
-    match result {
-        Some(token::Token::DecimalNumber(n)) => Some(n),
-        _ => None
+        match result {
+            Some(token::Token::DecimalNumber(n)) => Ok(n),
+            _ => Err(errors)
+        }
     }
 }
 

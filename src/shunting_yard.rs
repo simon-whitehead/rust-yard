@@ -52,12 +52,7 @@ impl<'a> ShuntingYard<'a> {
             return Err(self.errors.clone())
         }
 
-        match calc::calculate(&self.output_queue) {
-            Some(n) => {
-                Ok(n)
-            },
-            _ => Err(vec!["Unable to calculate a result".to_string()])
-        }
+        calc::calculate(&self.output_queue)
     }
 
     // Transforms the input from the Lexer in to the output_queue
