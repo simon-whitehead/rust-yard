@@ -114,19 +114,19 @@ pub fn calculate(input: &Vec<token::Token>) -> Option<f64> {
                         }
                     },
                     "sum" => {
-                        let values = Vec::new();
+                        let mut values = Vec::new();
 
                         loop {
                             match stack.last() {
                                 Some(&token::Token::DecimalNumber(n)) => {
                                     values.push(n);
+                                    stack.pop();
                                 },
-                                Some(&token::Token::LeftParenthesis) => break
-                                _ => ()
+                                _ => break
                             }
                         }
 
-                        stack.push(token::Token::DecimalNumber(values.fold(0, |acc, val| acc + val).collect()));
+                        stack.push(token::Token::DecimalNumber(values.iter().fold(0.0, |acc, val| acc + val)));
                     },
                     _ => break
                 }
