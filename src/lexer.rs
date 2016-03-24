@@ -68,9 +68,10 @@ impl<'a> Lexer<'a> {
                 // Add the operator and advance the iterator
                 self.ast.push(token::Token::Operator(c, token::LEFT_ASSOCIATIVE, 3));
             },
+            Some(c) if c == '^' => self.ast.push(token::Token::Operator(c, token::RIGHT_ASSOCIATIVE, 4)),
             Some(c) if c == '(' => self.ast.push(token::Token::LeftParenthesis),
             Some(c) if c == ')' => self.ast.push(token::Token::RightParenthesis),
-            Some(c) if c == '^' => self.ast.push(token::Token::Operator(c, token::RIGHT_ASSOCIATIVE, 4)),
+            Some(c) if c == ',' => self.ast.push(token::Token::Comma),
             Some(c) if c.is_alphabetic() => {
                 let ident = self.consume_identifier();
                 self.ast.push(token::Token::FunctionCall(ident));

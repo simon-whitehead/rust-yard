@@ -48,6 +48,7 @@ impl<'a> ShuntingYard<'a> {
 
         // If there are lexer errors, return early with them
         if self.errors.len() > 0 {
+            println!("Errors: {:?}", self.errors);
             return Err(self.errors.clone())
         }
 
@@ -106,6 +107,16 @@ impl<'a> ShuntingYard<'a> {
                         }
                     }
                 },
+                token::Token::Comma => {
+                    loop {
+                        match self.stack.last() {
+                            Some(&token::Token::LeftParenthesis) => {
+                                break;
+                            },
+                            _ => self.output_queue.push(self.stack.pop().unwrap())
+                        }
+                    }
+                },
                 _ => ()
             }
         }
@@ -141,6 +152,7 @@ impl<'a> ShuntingYard<'a> {
                 token::Token::DecimalNumber(n) => result.push_str(&n.to_string()[..]),
                 token::Token::LeftParenthesis => result.push_str("("),
                 token::Token::RightParenthesis => result.push_str(")"),
+                token::Token::Comma => result.push_str(","),
                 _ => ()
             };
 
@@ -168,6 +180,7 @@ impl<'a> std::string::ToString for ShuntingYard<'a> {
                 token::Token::DecimalNumber(n) => result.push_str(&n.to_string()[..]),
                 token::Token::LeftParenthesis => result.push_str("("),
                 token::Token::RightParenthesis => result.push_str(")"),
+                token::Token::Comma => result.push_str(","),
                 _ => ()
             };
 
