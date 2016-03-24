@@ -113,6 +113,21 @@ pub fn calculate(input: &Vec<token::Token>) -> Option<f64> {
                             stack.push(token::Token::DecimalNumber(n1.min(n2)));
                         }
                     },
+                    "sum" => {
+                        let values = Vec::new();
+
+                        loop {
+                            match stack.last() {
+                                Some(&token::Token::DecimalNumber(n)) => {
+                                    values.push(n);
+                                },
+                                Some(&token::Token::LeftParenthesis) => break
+                                _ => ()
+                            }
+                        }
+
+                        stack.push(token::Token::DecimalNumber(values.fold(0, |acc, val| acc + val).collect()));
+                    },
                     _ => break
                 }
             },
