@@ -108,7 +108,14 @@ impl<'a> ShuntingYard<'a> {
                             Some(&token::Token::LeftParenthesis) => {
                                 break;
                             },
-                            _ => self.output_queue.push(self.stack.pop().unwrap())
+                            _ => {
+                                if let Some(tok) = self.stack.pop() {
+                                    self.output_queue.push(tok);
+                                } else {
+                                    self.errors.push("Syntax error.".to_string());
+                                    break;
+                                }
+                            }
                         }
                     }
                 },
