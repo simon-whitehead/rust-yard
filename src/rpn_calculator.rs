@@ -23,7 +23,19 @@ pub fn calculate(input: &Vec<token::Token>) -> Option<f64> {
                 }
             },
             token::Token::WholeNumber(n) => stack.push(token::Token::DecimalNumber(n as f64)),
-            token::Token::FunctionCall(_, _) => break,
+            token::Token::FunctionCall(function_name) => {
+                match &function_name as &str {
+                    "sqrt" => {
+                        let arg = stack.pop();
+                        match arg {
+                            Some(token::Token::DecimalNumber(n)) => stack.push(token::Token::DecimalNumber((n as f64).sqrt())),
+                            Some(token::Token::WholeNumber(n)) => stack.push(token::Token::DecimalNumber((n as f64).sqrt())),
+                            _ => ()
+                        }
+                    },
+                    _ => break
+                }
+            },
             token::Token::LeftParenthesis => (),
             token::Token::RightParenthesis => (),
             token::Token::Whitespace => ()
