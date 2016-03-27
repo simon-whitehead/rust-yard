@@ -108,7 +108,6 @@ Equation equals: 63
 
 ### Built-in functions:
 
-* `sum(n, ...)` - return the sum of every argument.
 * `round(n)` - round up cutoff is .5.
 * `trunc(n)` - return integral part of number (1.44 -> 1.00).
 * `fract(n)` - return fractional part of number (1.44 -> 0.44).

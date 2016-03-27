@@ -114,21 +114,6 @@ pub fn calculate(input: &Vec<token::Token>) -> Result<f64, Vec<String>> {
                             stack.push(token::Token::DecimalNumber(n1.min(n2)));
                         }
                     },
-                    "sum" => {
-                        let mut values = Vec::new();
-
-                        loop {
-                            match stack.last() {
-                                Some(&token::Token::DecimalNumber(n)) => {
-                                    values.push(n);
-                                    stack.pop();
-                                },
-                                _ => break
-                            }
-                        }
-
-                        stack.push(token::Token::DecimalNumber(values.iter().fold(0.0, |acc, val| acc + val)));
-                    },
                     _ => errors.push(format!("Unknown identifier: {}", function_name))
                 }
             },
