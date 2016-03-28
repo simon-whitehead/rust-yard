@@ -68,11 +68,17 @@ impl<'a> Lexer<'a> {
                 // Add the operator and advance the iterator
                 self.ast.push(token::Token::Operator(c, token::LEFT_ASSOCIATIVE, 3));
             },
+            Some(c) if c == '^' => self.ast.push(token::Token::Operator(c, token::RIGHT_ASSOCIATIVE, 4)),
             Some(c) if c == '(' => self.ast.push(token::Token::LeftParenthesis),
             Some(c) if c == ')' => self.ast.push(token::Token::RightParenthesis),
-            Some(c) if c == '^' => self.ast.push(token::Token::Operator(c, token::RIGHT_ASSOCIATIVE, 4)),
-            Some(c) => self.errors.push(format!("Unknown identifier: {}", c)),
-            None => return
+            Some(c) if c == ',' => self.ast.push(token::Token::Comma),
+            Some(c) if c.is_alphabetic() => {
+                let ident = self.consume_identifier();
+                self.ast.push(token::Token::FunctionCall(ident));
+                skip_advance = true;
+            },
+            None => return,
+            _ => return
         }
         // Advance the iterator and continue consuming the input
         if !skip_advance {
@@ -106,6 +112,20 @@ impl<'a> Lexer<'a> {
 
         // Return out number as a String
         chars.into_iter().collect()
+    }
+
+    // Consumes an identifier until we don't have any other letters available
+    fn consume_identifier(&mut self) -> String {
+        let mut result = vec![];
+        loop {
+            match self.iter.peek() {
+                Some(c) if c.is_alphabetic() => result.push(*c),
+                _ => break
+            }
+            self.iter.advance();
+        }
+
+        result.into_iter().collect()
     }
 
     fn decipher_sign(&mut self) {

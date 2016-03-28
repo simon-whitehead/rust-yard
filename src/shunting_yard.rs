@@ -48,15 +48,11 @@ impl<'a> ShuntingYard<'a> {
 
         // If there are lexer errors, return early with them
         if self.errors.len() > 0 {
+            println!("Errors: {:?}", self.errors);
             return Err(self.errors.clone())
         }
 
-        match calc::calculate(&self.output_queue) {
-            Some(n) => {
-                Ok(n)
-            },
-            _ => Err(vec!["Unable to calculate a result".to_string()])
-        }
+        calc::calculate(&self.output_queue)
     }
 
     // Transforms the input from the Lexer in to the output_queue
@@ -68,6 +64,7 @@ impl<'a> ShuntingYard<'a> {
             match *tok {
                 token::Token::WholeNumber(_) => self.output_queue.push(tok.to_owned()),
                 token::Token::DecimalNumber(_) => self.output_queue.push(tok.to_owned()),
+                token::Token::FunctionCall(_) => self.stack.push(tok.to_owned()),
                 token::Token::Operator(o1, o1_associativity, o1_precedence) => {
                     while self.stack.len() > 0 {
                         match self.stack.last() {
@@ -80,6 +77,9 @@ impl<'a> ShuntingYard<'a> {
                                    } else {
                                        break
                                    }
+                            },
+                            Some(&token::Token::FunctionCall(_)) => {
+                                self.output_queue.push(self.stack.pop().unwrap());
                             },
                             _ => break
                         }
@@ -102,6 +102,23 @@ impl<'a> ShuntingYard<'a> {
                         }
                     }
                 },
+                token::Token::Comma => {
+                    loop {
+                        match self.stack.last() {
+                            Some(&token::Token::LeftParenthesis) => {
+                                break;
+                            },
+                            _ => {
+                                if let Some(tok) = self.stack.pop() {
+                                    self.output_queue.push(tok);
+                                } else {
+                                    self.errors.push("Syntax error.".to_string());
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                },
                 _ => ()
             }
         }
@@ -111,9 +128,6 @@ impl<'a> ShuntingYard<'a> {
             // Pop them off and push them to the output_queue
             let op = self.stack.pop();
             match op {
-                Some(token::Token::Operator(o, oa, op)) => {
-                    self.output_queue.push(token::Token::Operator(o, oa, op)); 
-                },
                 Some(token::Token::LeftParenthesis) => {
                     self.errors.push("Unbalanced parenthesis".to_string());
                     break;
@@ -122,7 +136,7 @@ impl<'a> ShuntingYard<'a> {
                     self.errors.push("Unbalanced parenthesis".to_string());
                     break;
                 },
-                _ => ()
+                _ => self.output_queue.push(op.unwrap())
             }
         }
     }
@@ -136,9 +150,11 @@ impl<'a> ShuntingYard<'a> {
         for tok in &self.lexer.ast {
             match *tok {
                 token::Token::Operator(c, _, _) => result.push(c),
+                token::Token::FunctionCall(ref f) => result.push_str(&f.clone()[..]),
                 token::Token::DecimalNumber(n) => result.push_str(&n.to_string()[..]),
                 token::Token::LeftParenthesis => result.push_str("("),
                 token::Token::RightParenthesis => result.push_str(")"),
+                token::Token::Comma => result.push_str(","),
                 _ => ()
             };
 
@@ -162,9 +178,11 @@ impl<'a> std::string::ToString for ShuntingYard<'a> {
         for tok in &self.output_queue {
             match *tok {
                 token::Token::Operator(c, _, _) => result.push(c),
+                token::Token::FunctionCall(ref f) => result.push_str(&f.clone()[..]),
                 token::Token::DecimalNumber(n) => result.push_str(&n.to_string()[..]),
                 token::Token::LeftParenthesis => result.push_str("("),
                 token::Token::RightParenthesis => result.push_str(")"),
+                token::Token::Comma => result.push_str(","),
                 _ => ()
             };
 

@@ -23,7 +23,7 @@ fn main() {
 
 ### Examples
 
-The implementation accepts the 4 basic mathematical operators, the power operator and parenthesis. It also considers all input to be floating point. Some examples are below:
+The implementation accepts the 4 basic mathematical operators the power operator, parenthesis and several built-in mathematicl functions. It also considers all input to be floating point. Some examples are below:
 
 #### Basic addition:
 ```
@@ -96,6 +96,30 @@ ERR: Unknown identifier: a
 ERR: Unknown identifier: b
 ERR: Unknown identifier: c
 ```
+
+#### Functions:
+```
+Simon$ cargo run --example main "sqrt(9) + 10 + max(10, 50)"
+Input is: sqrt(9) + 10 + max(10, 50)
+Lexer result: sqrt ( 9 ) + 10 + max ( 10 , 50 ) 
+Shunting Yard result: 9 sqrt 10 + 10 50 max + 
+Equation equals: 63
+```
+
+### Built-in functions:
+
+* `round(n)` - round up cutoff is .5.
+* `trunc(n)` - return integral part of number (1.44 -> 1.00).
+* `fract(n)` - return fractional part of number (1.44 -> 0.44).
+* `pow(n, e)` - raise n to the power of e.
+* `sqrt(n)` - return square root of n.
+* `max(n, m)` - return the larger of n and m.
+* `min(n, m)` - return the smaller of n and m.
+* `cos(n)`
+* `sin(n)`
+* `tan(n)`
+* `floor(n)`
+* `ceil(n)`
 
 ### Licence
 
